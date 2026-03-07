@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>黃俞蓁 | 個人簡介</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, "Microsoft JhengHei";
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: white;
+            width: 90%;
+            max-width: 600px;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+        }
+
+        header h1 {
+            margin: 10px 0;
+            color: var(--primary-color);
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            color: var(--accent-color);
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+
+        hr {
+            border: 0;
+            height: 1px;
+            background: #eee;
+            margin: 25px 0;
+        }
+
+        .section {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .section h3 {
+            color: var(--primary-color);
+            border-left: 4px solid var(--accent-color);
+            padding-left: 10px;
+            margin-bottom: 10px;
+        }
+
+        .info-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .info-list li {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .info-list b {
+            width: 100px;
+            display: inline-block;
+        }
+
+        .email-link {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        .email-link:hover {
+            text-decoration: underline;
+        }
+
+        .footer {
+            margin-top: 30px;
+            font-size: 0.9rem;
+            color: #888;
+        }
+
+        /* 簡單的標籤樣式 */
+        .tag {
+            display: inline-block;
+            background: #e1f0fa;
+            color: #3498db;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>黃俞蓁</h1>
+        <div class="subtitle">國立金門大學 資訊工程學系 | 學生</div>
+    </header>
+
+    <hr>
+
+    <div class="section">
+        <h3>關於我</h3>
+        <ul class="info-list">
+            <li><b>就讀學校：</b>國立金門大學</li>
+            <li><b>電子郵件：</b><a class="email-link" href="mailto:s111410548@stu.nqu.edu.tw">s111410548@stu.nqu.edu.tw</a></li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h3>興趣愛好</h3>
+        <span class="tag">📖 看書</span>
+        <span class="tag">🎮 打電動</span>
+    </div>
+
+    <div class="section">
+        <h3>未來期許</h3>
+        <p>深耕資工專業知識，精進程式開發技能，期許未來能畢業後順利進入產業，<b>成為一名優秀的工程師</b>。</p>
+    </div>
+
+    <div class="footer">
+        © 2026 Powered by Yu-Zhen Huang
+    </div>
+</div>
+
+</body>
+</html>
