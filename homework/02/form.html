@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>產品體驗回饋表單</title>
+    <style>
+        /* :root 選擇器用來定義全域 CSS 變數，方便後續統一管理與修改網站的主題色或間距 */
+        :root {
+            --primary-color: #4A90E2;      /* 主要按鈕與標題顏色 (藍色) */
+            --primary-hover: #357ABD;      /* 按鈕懸停時的顏色 (深藍色) */
+            --bg-color: #F4F7F6;           /* 網頁背景顏色 (淺灰) */
+            --text-color: #333;            /* 主要文字顏色 (深灰) */
+            --border-color: #ccc;          /* 輸入框的邊框顏色 */
+            --border-focus: #4A90E2;       /* 輸入框點擊聚焦時的邊框顏色 */
+            --border-radius: 8px;          /* 統一的圓角大小 */
+        }
+
+        /* 網頁主體樣式 */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* 設定易讀的無襯線字體 */
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;                 /* 使用 Flexbox 排版 */
+            justify-content: center;       /* 讓內部的表單容器在畫面上水平置中 */
+            padding: 40px 20px;            /* 上下留 40px 空間，左右留 20px 空間避免貼著螢幕邊緣 */
+            margin: 0;
+        }
+
+        /* 表單的白色外框容器 */
+        .form-container {
+            background-color: #fff;
+            padding: 30px 40px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); /* 加上淡淡的陰影，讓表單有浮起的立體感 */
+            width: 100%;                   /* 寬度隨螢幕縮放 */
+            max-width: 600px;              /* 但最大寬度不超過 600px，確保在大螢幕上不會過度拉伸 */
+        }
+
+        h2 {
+            text-align: center;            /* 標題置中 */
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+
+        p.subtitle {
+            text-align: center;
+            font-size: 0.9em;
+            color: #666;                   /* 副標題使用較淺的灰色，降低視覺干擾 */
+            margin-bottom: 25px;
+        }
+
+        /* 每一個問題區塊的間距設定 */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        /* 問題標籤的樣式 */
+        label {
+            display: block;                /* 讓標籤獨佔一行，輸入框會掉到下一行 */
+            margin-bottom: 8px;
+            font-weight: 600;              /* 字體加粗，增加辨識度 */
+            font-size: 0.95em;
+        }
+
+        /* 基礎輸入框的共用樣式 (涵蓋文字、信箱、數字、下拉選單等多種 input) */
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="url"],
+        input[type="password"],
+        input[type="number"],
+        input[type="date"],
+        input[type="time"],
+        select,
+        textarea {
+            width: 100%;                   /* 寬度填滿父容器 */
+            padding: 10px;                 /* 輸入框內部的留白 */
+            border: 1px solid var(--border-color); /* 基礎邊框 */
+            border-radius: 6px;
+            box-sizing: border-box;        /* 確保 padding 不會撐破 100% 的寬度 */
+            font-size: 1em;
+            transition: border-color 0.3s ease; /* 邊框變色時加入 0.3 秒的平滑過場動畫 */
+        }
+
+        /* 當使用者點擊(聚焦)輸入框時的互動效果 */
+        input:focus, select:focus, textarea:focus {
+            outline: none;                 /* 移除瀏覽器預設的醜醜聚焦外框 */
+            border-color: var(--border-focus); /* 換成我們自訂的藍色邊框 */
+            box-shadow: 0 0 5px rgba(74, 144, 226, 0.2); /* 加上一點發光效果 */
+        }
+
+        /* 單選與多選框的容器：使用 Flexbox 讓選項橫向排列 */
+        .radio-group, .checkbox-group {
+            display: flex;
+            gap: 15px;                     /* 選項之間的間距 */
+            flex-wrap: wrap;               /* 如果螢幕太窄，允許選項自動換行 */
+        }
+
+        /* 調整單選與多選框內部標籤的排版 */
+        .radio-group label, .checkbox-group label {
+            font-weight: normal;           /* 取消前面設定的標籤加粗 */
+            display: flex;
+            align-items: center;           /* 讓圓圈/方框與文字垂直置中對齊 */
+            gap: 5px;
+            cursor: pointer;               /* 滑鼠移過去變成手指圖示，提示可點擊 */
+        }
+
+        /* 範圍滑桿 (Range) 的樣式微調 */
+        input[type="range"] {
+            width: 100%;
+            cursor: pointer;
+        }
+
+        /* 自訂顏色選擇器 (Color) 的外觀 */
+        input[type="color"] {
+            -webkit-appearance: none;      /* 隱藏 Safari/Chrome 預設的按鈕外觀 */
+            border: none;
+            width: 50px;                   /* 自訂色塊寬度 */
+            height: 40px;                  /* 自訂色塊高度 */
+            border-radius: 6px;
+            cursor: pointer;
+            padding: 0;
+        }
+        input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;                    /* 清除色塊外圍的預設留白 */
+        }
+        input[type="color"]::-webkit-color-swatch {
+            border: 1px solid var(--border-color); /* 幫色塊加上細邊框 */
+            border-radius: 6px;
+        }
+
+        /* 檔案上傳 (File) 的字體微調 */
+        input[type="file"] {
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        /* 底部按鈕區塊的排版 */
+        .button-group {
+            display: flex;
+            gap: 15px;                     /* 兩個按鈕之間的間距 */
+            margin-top: 30px;
+        }
+
+        /* 按鈕共用樣式 */
+        button, input[type="submit"], input[type="reset"] {
+            flex: 1;                       /* 讓送出與清除按鈕平分寬度 */
+            padding: 12px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease; /* 滑鼠懸停時的漸變效果 */
+        }
+
+        /* 送出按鈕特別樣式 */
+        input[type="submit"] {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        input[type="submit"]:hover {
+            background-color: var(--primary-hover);
+        }
+
+        /* 清除按鈕特別樣式 */
+        input[type="reset"] {
+            background-color: #e0e0e0;
+            color: #333;
+        }
+
+        input[type="reset"]:hover {
+            background-color: #ccc;
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2>產品體驗回饋表單</h2>
+    <p class="subtitle">您的寶貴意見是我們進步的動力，請花幾分鐘與我們分享！</p>
+
+    <form action="#" method="POST">
+        
+        <div class="form-group">
+            <label for="username">您的姓名 (Text)</label>
+            <input type="text" id="username" name="username" placeholder="請輸入姓名" required>
+        </div>
+
+        <div class="form-group">
+            <label for="email">電子郵件 (Email)</label>
+            <input type="email" id="email" name="email" placeholder="example@domain.com" required>
+        </div>
+
+        <div class="form-group">
+            <label for="phone">聯絡電話 (Tel)</label>
+            <input type="tel" id="phone" name="phone" placeholder="0912-345-678">
+        </div>
+
+        <div class="form-group">
+            <label for="member-pwd">驗證會員密碼 (Password)</label>
+            <input type="password" id="member-pwd" name="member-pwd" placeholder="請輸入密碼">
+        </div>
+
+        <div class="form-group">
+            <label for="age">您的年齡 (Number)</label>
+            <input type="number" id="age" name="age" min="15" max="100" placeholder="18">
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid #eee; margin: 25px 0;">
+
+        <div class="form-group">
+            <label for="purchase-date">購買日期 (Date)</label>
+            <input type="date" id="purchase-date" name="purchase-date">
+        </div>
+
+        <div class="form-group">
+            <label for="usage-time">通常使用的時間點 (Time)</label>
+            <input type="time" id="usage-time" name="usage-time">
+        </div>
+
+        <div class="form-group">
+            <label>整體滿意度 (Radio)</label>
+            <div class="radio-group">
+                <label><input type="radio" name="satisfaction" value="excellent"> 非常滿意</label>
+                <label><input type="radio" name="satisfaction" value="good"> 滿意</label>
+                <label><input type="radio" name="satisfaction" value="fair"> 普通</label>
+                <label><input type="radio" name="satisfaction" value="poor"> 不滿意</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="nps">推薦指數 1-10 分 (Range)</label>
+            <input type="range" id="nps" name="nps" min="1" max="10" step="1" value="8">
+        </div>
+
+        <div class="form-group">
+            <label>您最喜歡的產品特色 (Checkbox)</label>
+            <div class="checkbox-group">
+                <label><input type="checkbox" name="features" value="design"> 外觀設計</label>
+                <label><input type="checkbox" name="features" value="performance"> 效能表現</label>
+                <label><input type="checkbox" name="features" value="price"> 價格實惠</label>
+                <label><input type="checkbox" name="features" value="service"> 售後服務</label>
+            </div>
+        </div>
+
+        <div class="form-group" style="display: flex; align-items: center; gap: 15px;">
+            <label for="fav-color" style="margin-bottom: 0;">希望未來推出的產品顏色 (Color)</label>
+            <input type="color" id="fav-color" name="fav-color" value="#4A90E2">
+        </div>
+
+        <div class="form-group">
+            <label for="social-url">您的個人網站或社群連結 (URL)</label>
+            <input type="url" id="social-url" name="social-url" placeholder="https://...">
+        </div>
+
+        <div class="form-group">
+            <label for="screenshot">上傳問題截圖 (File)</label>
+            <input type="file" id="screenshot" name="screenshot" accept="image/*">
+        </div>
+
+        <div class="form-group">
+            <label for="comments">其他建議與回饋 (Textarea)</label>
+            <textarea id="comments" name="comments" rows="4" placeholder="請告訴我們您的想法..."></textarea>
+        </div>
+
+        <div class="button-group">
+            <input type="reset" value="清空重填 (Reset)">
+            <input type="submit" value="送出回饋 (Submit)">
+        </div>
+    </form>
+</div>
+
+</body>
+</html>
