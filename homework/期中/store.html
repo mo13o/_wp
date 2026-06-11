@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>質感一頁式商店 - 註冊系統版</title>
+    <style>
+        /* --- 基礎重置與變數 --- */
+        :root {
+            --primary-color: #4A90E2;
+            --bg-color: #F5F7FA;
+            --text-color: #333;
+            --card-bg: #FFF;
+            --star-color: #F5A623;
+        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 0; }
+        
+        /* --- 頂部導覽列 --- */
+        header { background-color: var(--card-bg); padding: 15px 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; flex-wrap: wrap; gap: 15px; }
+        .logo { font-size: 24px; font-weight: bold; color: var(--primary-color); }
+        .search-bar { padding: 10px 15px; border: 1px solid #ddd; border-radius: 20px; width: 300px; outline: none; }
+        .header-actions { display: flex; gap: 10px; align-items: center; }
+        
+        /* 按鈕樣式 */
+        .btn-primary { background-color: var(--primary-color); color: white; border: none; padding: 10px 15px; border-radius: 20px; cursor: pointer; font-weight: bold; transition: background 0.3s; }
+        .btn-primary:hover { background-color: #357ABD; }
+        .btn-outline { background-color: transparent; color: var(--text-color); border: 1px solid #ccc; padding: 8px 15px; border-radius: 20px; cursor: pointer; transition: 0.3s; }
+        .btn-outline:hover { background-color: #eee; }
+        .user-greeting { font-weight: bold; color: #555; }
+
+        /* --- 商品列表區域 --- */
+        main { padding: 30px; max-width: 1200px; margin: 0 auto; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
+        .product-card { background-color: var(--card-bg); border-radius: 10px; padding: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center; transition: transform 0.2s; cursor: pointer; position: relative; }
+        .product-card:hover { transform: translateY(-5px); }
+        .product-image { width: 100%; height: 200px; background-color: #eee; border-radius: 8px; object-fit: cover; }
+        .product-title { font-size: 18px; margin: 15px 0 5px; }
+        .product-price { color: #E74C3C; font-weight: bold; font-size: 20px; margin-bottom: 10px; }
+        
+        /* --- 彈出視窗 (Modal) --- */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: var(--card-bg); padding: 30px; border-radius: 15px; width: 90%; max-width: 500px; position: relative; max-height: 85vh; overflow-y: auto; }
+        .close-btn { position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; color: #888; }
+        
+        /* 表單樣式 */
+        .form-group { margin-bottom: 15px; }
+        .form-control { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        .form-switch { text-align: center; margin-top: 15px; font-size: 14px; color: #666; }
+        .form-switch a { color: var(--primary-color); cursor: pointer; font-weight: bold; text-decoration: underline; }
+        
+        /* 評價區塊 */
+        .review-section { margin-top: 25px; border-top: 1px solid #eee; padding-top: 20px; }
+        .review-item { background: #f9f9f9; padding: 12px; border-radius: 8px; margin-bottom: 10px; text-align: left; }
+        .review-header { display: flex; justify-content: space-between; margin-bottom: 5px; }
+        .review-date { font-size: 12px; color: #888; margin-bottom: 8px; }
+        .review-text { font-size: 14px; line-height: 1.4; color: #444; }
+        .stars-display { color: var(--star-color); letter-spacing: 2px; }
+        .star-select span { font-size: 28px; color: #ccc; cursor: pointer; transition: 0.2s; }
+        .star-select span.active { color: var(--star-color); }
+        .star-select { margin-bottom: 10px; display: inline-block; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">ShopStore</div>
+        <input type="text" class="search-bar" id="searchInput" placeholder="🔍 查詢商品名稱..." onkeyup="searchProducts()">
+        <div class="header-actions">
+            <button class="btn-outline" onclick="claimDailyReward()">🎁 每日獎勵</button>
+            <div id="authContainer" class="header-actions"></div>
+        </div>
+    </header>
+
+    <main>
+        <h2 id="resultTitle">全部商品</h2>
+        <div class="product-grid" id="productGrid"></div>
+    </main>
+
+    <div class="modal-overlay" id="previewModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('previewModal')">&times;</span>
+            <img src="" alt="商品圖片" class="product-image" id="modalImg" style="height:250px;">
+            <h2 id="modalTitle">商品名稱</h2>
+            <p id="modalDesc">商品詳細介紹...</p>
+            <div class="product-price" id="modalPrice">$0</div>
+            
+            <div class="review-section">
+                <h3 style="margin-top: 0;">顧客評價</h3>
+                <div id="reviewsList"></div>
+                <div id="reviewActionContainer" style="margin-top: 20px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal-content" style="max-width: 400px;">
+            <span class="close-btn" onclick="closeModal('loginModal')">&times;</span>
+            <h2 style="text-align: center;">會員登入</h2>
+            <div class="form-group">
+                <input type="text" id="loginUsername" class="form-control" placeholder="帳號名稱">
+            </div>
+            <div class="form-group">
+                <input type="password" id="loginPassword" class="form-control" placeholder="密碼">
+            </div>
+            <button class="btn-primary" style="width: 100%; font-size: 16px;" onclick="performLogin()">登入</button>
+            <div class="form-switch">
+                還沒有帳號嗎？ <a onclick="switchModal('loginModal', 'registerModal')">立即註冊</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="registerModal">
+        <div class="modal-content" style="max-width: 400px;">
+            <span class="close-btn" onclick="closeModal('registerModal')">&times;</span>
+            <h2 style="text-align: center;">註冊新會員</h2>
+            <div class="form-group">
+                <input type="text" id="regUsername" class="form-control" placeholder="請設定帳號名稱">
+            </div>
+            <div class="form-group">
+                <input type="password" id="regPassword" class="form-control" placeholder="請設定密碼">
+            </div>
+            <div class="form-group">
+                <input type="password" id="regConfirmPassword" class="form-control" placeholder="請再次輸入密碼">
+            </div>
+            <button class="btn-primary" style="width: 100%; font-size: 16px;" onclick="performRegister()">註冊並登入</button>
+            <div class="form-switch">
+                已經有帳號了？ <a onclick="switchModal('registerModal', 'loginModal')">返回登入</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. 基礎資料與全域變數 ---
+        const products = [
+            { id: 1, name: "無線降噪耳機", price: 2990, desc: "提供極致的音樂體驗，長達30小時續航。", img: "https://via.placeholder.com/300x200?text=Headphones" },
+            { id: 2, name: "智慧型手錶", price: 4500, desc: "全天候心率監測，支援多種運動模式。", img: "https://via.placeholder.com/300x200?text=Smart+Watch" },
+            { id: 3, name: "機械鍵盤", price: 2100, desc: "青軸機械鍵盤，手感清脆，適合打字與遊戲。", img: "https://via.placeholder.com/300x200?text=Keyboard" },
+            { id: 4, name: "人體工學滑鼠", price: 1200, desc: "減少手腕負擔，長時間辦公必備。", img: "https://via.placeholder.com/300x200?text=Mouse" }
+        ];
+
+        let currentOpenProductId = null;
+        let currentSelectedRating = 5;
+
+        // --- 2. 渲染商品與搜尋 ---
+        function renderProducts(productList) {
+            const grid = document.getElementById('productGrid');
+            grid.innerHTML = '';
+            productList.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.onclick = () => openPreview(p);
+                card.innerHTML = `<img src="${p.img}" alt="${p.name}" class="product-image"><h3 class="product-title">${p.name}</h3><div class="product-price">NT$ ${p.price}</div>`;
+                grid.appendChild(card);
+            });
+        }
+
+        function searchProducts() {
+            const kw = document.getElementById('searchInput').value.toLowerCase();
+            renderProducts(products.filter(p => p.name.toLowerCase().includes(kw) || p.desc.toLowerCase().includes(kw)));
+            document.getElementById('resultTitle').innerText = kw ? `搜尋結果: "${kw}"` : "全部商品";
+        }
+
+        // --- 3. 模態視窗共用控制 ---
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function switchModal(closeId, openId) { closeModal(closeId); openModal(openId); }
+        
+        window.onclick = e => { if (e.target.classList.contains('modal-overlay')) e.target.style.display = 'none'; }
+
+        // --- 4. 註冊與登入系統 (核心更新) ---
+        
+        // 取得所有使用者資料 { "username": "password" }
+        function getUsersData() {
+            return JSON.parse(localStorage.getItem('shop_users')) || {};
+        }
+
+        // 更新介面 (根據登入狀態切換按鈕)
+        function updateAuthUI() {
+            const container = document.getElementById('authContainer');
+            const user = localStorage.getItem('currentUser');
+            if (user) {
+                container.innerHTML = `
+                    <span class="user-greeting">👋 ${user}</span>
+                    <button class="btn-outline" onclick="performLogout()">登出</button>
+                `;
+            } else {
+                container.innerHTML = `
+                    <button class="btn-outline" onclick="openModal('loginModal')">👤 登入</button>
+                    <button class="btn-primary" onclick="openModal('registerModal')">📝 註冊</button>
+                `;
+            }
+        }
+
+        // 註冊功能
+        function performRegister() {
+            const username = document.getElementById('regUsername').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('regConfirmPassword').value;
+
+            if (!username || !password) return alert("帳號與密碼不能為空！");
+            if (password !== confirmPassword) return alert("兩次輸入的密碼不一致！");
+
+            const users = getUsersData();
+            if (users[username]) return alert("此帳號已經被註冊過囉！請換一個帳號名稱。");
+
+            // 儲存新帳號與密碼
+            users[username] = password;
+            localStorage.setItem('shop_users', JSON.stringify(users));
+
+            // 註冊後自動登入
+            localStorage.setItem('currentUser', username);
+            closeModal('registerModal');
+            document.getElementById('regUsername').value = '';
+            document.getElementById('regPassword').value = '';
+            document.getElementById('regConfirmPassword').value = '';
+            
+            updateAuthUI();
+            alert("註冊成功！已為您自動登入。");
+            refreshReviewUI();
+        }
+
+        // 登入功能
+        function performLogin() {
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            if (!username || !password) return alert("請輸入帳號與密碼！");
+
+            const users = getUsersData();
+            
+            // 檢查帳號是否存在，且密碼是否正確
+            if (!users[username]) {
+                return alert("找不到此帳號，請確認輸入是否正確或先進行註冊！");
+            }
+            if (users[username] !== password) {
+                return alert("密碼錯誤，請再試一次！");
+            }
+
+            // 登入成功
+            localStorage.setItem('currentUser', username);
+            closeModal('loginModal');
+            document.getElementById('loginUsername').value = '';
+            document.getElementById('loginPassword').value = '';
+            
+            updateAuthUI();
+            alert(`登入成功！歡迎回來，${username}。`);
+            refreshReviewUI();
+        }
+
+        // 登出功能
+        function performLogout() {
+            if(confirm('確定要登出嗎？')) {
+                localStorage.removeItem('currentUser');
+                updateAuthUI();
+                refreshReviewUI();
+            }
+        }
+
+        // 輔助函式：如果目前商品預覽是開著的，更新底下的留言表單狀態
+        function refreshReviewUI() {
+            if (document.getElementById('previewModal').style.display === 'flex') {
+                updateReviewFormUI(currentOpenProductId);
+            }
+        }
+
+        // --- 5. 評價與商品預覽 (延續上個版本) ---
+        function openPreview(p) {
+            currentOpenProductId = p.id;
+            document.getElementById('modalImg').src = p.img;
+            document.getElementById('modalTitle').innerText = p.name;
+            document.getElementById('modalDesc').innerText = p.desc;
+            document.getElementById('modalPrice').innerText = `NT$ ${p.price}`;
+            loadReviews(p.id);
+            updateReviewFormUI(p.id);
+            openModal('previewModal');
+        }
+
+        function loadReviews(productId) {
+            const allReviews = JSON.parse(localStorage.getItem('shop_reviews')) || {};
+            const productReviews = allReviews[productId] || [];
+            const listDiv = document.getElementById('reviewsList');
+            if (productReviews.length === 0) { listDiv.innerHTML = '<p style="color:#888; font-size: 14px; text-align: center;">目前還沒有評價，成為第一個評價的人吧！</p>'; return; }
+            listDiv.innerHTML = productReviews.map(r => `<div class="review-item"><div class="review-header"><strong>${r.user}</strong><span class="stars-display">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span></div><div class="review-date">${r.date}</div><div class="review-text">${r.text}</div></div>`).join('');
+        }
+
+        function updateReviewFormUI(productId) {
+            const container = document.getElementById('reviewActionContainer');
+            const user = localStorage.getItem('currentUser');
+            if (!user) {
+                container.innerHTML = `<div style="text-align:center; padding: 15px; background: #f1f1f1; border-radius: 8px;"><p style="margin: 0 0 10px 0; color: #666;">請先登入以購買商品及留言評分</p><button class="btn-outline" onclick="closeModal('previewModal'); openModal('loginModal')">前往登入</button></div>`;
+                return;
+            }
+            const purchases = JSON.parse(localStorage.getItem(`purchases_${user}`)) || [];
+            if (purchases.includes(productId)) {
+                currentSelectedRating = 5;
+                container.innerHTML = `<div style="background: #eef2f5; padding: 15px; border-radius: 8px;"><h4 style="margin-top: 0; margin-bottom: 10px;">撰寫您的評價</h4><div class="star-select" id="starSelector"><span class="active" onclick="setRating(1)">★</span><span class="active" onclick="setRating(2)">★</span><span class="active" onclick="setRating(3)">★</span><span class="active" onclick="setRating(4)">★</span><span class="active" onclick="setRating(5)">★</span></div><textarea id="reviewTextInput" class="form-control" rows="3" placeholder="寫下您的購買心得... (必填)"></textarea><button class="btn-primary" style="width: 100%; margin-top: 10px;" onclick="submitReview()">送出評價</button></div>`;
+            } else {
+                container.innerHTML = `<div style="text-align:center; padding: 15px; border: 1px dashed #4A90E2; border-radius: 8px;"><p style="margin: 0 0 10px 0; font-weight: bold; color: #4A90E2;">購買後即可解鎖留言與評分功能！</p><button class="btn-primary" onclick="simulatePurchase(${productId})">💳 模擬購買此商品</button></div>`;
+            }
+        }
+
+        function simulatePurchase(productId) {
+            const user = localStorage.getItem('currentUser');
+            let purchases = JSON.parse(localStorage.getItem(`purchases_${user}`)) || [];
+            if (!purchases.includes(productId)) { purchases.push(productId); localStorage.setItem(`purchases_${user}`, JSON.stringify(purchases)); }
+            alert("✅ 模擬購買成功！您現在可以為此商品留下評價了。"); updateReviewFormUI(productId);
+        }
+
+        function setRating(stars) { currentSelectedRating = stars; const spans = document.getElementById('starSelector').getElementsByTagName('span'); for(let i=0; i<5; i++) i < stars ? spans[i].classList.add('active') : spans[i].classList.remove('active'); }
+
+        function submitReview() {
+            const text = document.getElementById('reviewTextInput').value.trim();
+            if (!text) return alert("請填寫評價內容！");
+            let allReviews = JSON.parse(localStorage.getItem('shop_reviews')) || {};
+            if (!allReviews[currentOpenProductId]) allReviews[currentOpenProductId] = [];
+            allReviews[currentOpenProductId].unshift({ user: localStorage.getItem('currentUser'), rating: currentSelectedRating, text, date: new Date().toLocaleDateString() });
+            localStorage.setItem('shop_reviews', JSON.stringify(allReviews));
+            alert("感謝您的評價！"); loadReviews(currentOpenProductId); document.getElementById('reviewTextInput').value = '';
+        }
+        
+        function claimDailyReward() {
+            const user = localStorage.getItem('currentUser');
+            if (!user) { alert("⚠️ 請先登入才能領取獎勵！"); return openModal('loginModal'); }
+            const key = `reward_${user}`;
+            const today = new Date().toLocaleDateString();
+            if (localStorage.getItem(key) === today) alert("今天領過囉！明天再來吧。");
+            else { localStorage.setItem(key, today); alert("🎉 獲得 50元折價券！結帳時請輸入序號：DAILY50"); }
+        }
+
+        window.onload = () => { renderProducts(products); updateAuthUI(); };
+    </script>
+</body>
+</html>
