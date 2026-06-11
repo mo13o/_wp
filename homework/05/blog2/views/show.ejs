@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title><%= post.title %> - DC Blog</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; color: #333; }
+    .navbar { background: #fff; border-bottom: 1px solid #e0e0e0; position: sticky; top: 0; z-index: 100; }
+    .nav-inner { max-width: 960px; margin: 0 auto; display: flex; align-items: center; padding: 0 16px; height: 56px; }
+    .logo { font-size: 20px; font-weight: 700; color: #6b46c1; text-decoration: none; margin-right: 32px; }
+    .nav-tabs { display: flex; gap: 4px; flex: 1; }
+    .nav-tab { padding: 8px 16px; text-decoration: none; color: #666; font-size: 14px; border-radius: 20px; }
+    .nav-tab:hover { background: #f0f0f0; }
+    .nav-tab.active { background: #6b46c1; color: #fff; }
+    .nav-user { display: flex; align-items: center; gap: 12px; font-size: 14px; }
+    .nav-user .username { color: #666; }
+    .nav-user a { color: #6b46c1; text-decoration: none; }
+    .nav-user a:hover { text-decoration: underline; }
+    .nav-user form { display: inline; }
+    .nav-user button { background: none; border: none; color: #6b46c1; cursor: pointer; font-size: 14px; text-decoration: underline; }
+    .container { max-width: 640px; margin: 0 auto; padding: 16px; }
+    .post-card { background: #fff; border-radius: 8px; padding: 28px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+    .post-card h1 { font-size: 22px; margin-bottom: 8px; }
+    .post-card .meta { font-size: 13px; color: #999; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #eee; }
+    .author-link { color: #6b46c1; text-decoration: none; font-weight: 500; }
+    .author-link:hover { text-decoration: underline; }
+    .post-card .content { font-size: 15px; line-height: 1.8; white-space: pre-wrap; color: #444; }
+    .actions { margin-top: 28px; padding-top: 16px; border-top: 1px solid #eee; display: flex; gap: 8px; }
+    .btn { background: #6b46c1; color: #fff; border: none; padding: 8px 20px; border-radius: 20px; font-size: 14px; cursor: pointer; text-decoration: none; transition: background .2s; }
+    .btn:hover { background: #553c9a; }
+    .btn-outline { background: none; color: #6b46c1; border: 1px solid #6b46c1; padding: 8px 20px; border-radius: 20px; font-size: 14px; cursor: pointer; text-decoration: none; transition: all .2s; }
+    .btn-outline:hover { background: #f3eefb; }
+    .btn-danger { background: none; color: #e53e3e; border: 1px solid #e53e3e; padding: 8px 20px; border-radius: 20px; font-size: 14px; cursor: pointer; text-decoration: none; }
+    .btn-danger:hover { background: #fff5f5; }
+    @media (max-width: 640px) { .nav-inner { padding: 0 12px; } .container { padding: 12px; } .post-card { padding: 20px; } }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="/" class="logo">DC Blog</a>
+      <div class="nav-tabs">
+        <a href="/" class="nav-tab">公共貼文</a>
+        <% if (user) { %><a href="/my" class="nav-tab">我的貼文</a><% } %>
+      </div>
+      <div class="nav-user">
+        <% if (user) { %>
+          <span class="username"><%= user.username %></span>
+          <form action="/logout" method="POST"><button type="submit">登出</button></form>
+        <% } else { %>
+          <a href="/login">登入</a>
+          <a href="/register">註冊</a>
+        <% } %>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="post-card">
+      <h1><%= post.title %></h1>
+      <div class="meta"><a href="/user/<%= post.author_id %>" class="author-link"><%= post.author %></a> · <%= post.created_at %></div>
+      <div class="content"><%= post.content %></div>
+      <% if (user && user.id === post.author_id) { %>
+        <div class="actions">
+          <a href="/post/<%= post.id %>/edit" class="btn">編輯</a>
+          <form action="/post/<%= post.id %>/delete" method="POST" style="display:inline">
+            <button type="submit" class="btn-danger" onclick="return confirm('確定刪除？')">刪除</button>
+          </form>
+          <a href="/" class="btn-outline">回列表</a>
+        </div>
+      <% } else { %>
+        <div class="actions">
+          <a href="/" class="btn-outline">回列表</a>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</body>
+</html>

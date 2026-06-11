@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>簡易網誌</title>
+  <style>
+    body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+    h1 { color: #333; }
+    .post { border-bottom: 1px solid #ddd; padding: 15px 0; }
+    .post h2 { margin: 0 0 5px; }
+    .post h2 a { color: #2c6b9e; text-decoration: none; }
+    .post .meta { color: #888; font-size: 0.9em; }
+    .excerpt { margin-top: 8px; color: #555; line-height: 1.6; }
+    .read-more { display: inline-block; margin-top: 4px; color: #2c6b9e; text-decoration: none; font-size: 0.9em; }
+    .read-more:hover { text-decoration: underline; }
+    .btn { display: inline-block; padding: 8px 16px; background: #2c6b9e; color: #fff; text-decoration: none; border-radius: 4px; }
+    .btn:hover { background: #1a4a6e; }
+  </style>
+</head>
+<body>
+  <h1>簡易網誌</h1>
+  <a href="/post/new" class="btn">寫新文章</a>
+  <% if (posts.length === 0) { %>
+    <p>目前沒有文章</p>
+  <% } %>
+  <% posts.forEach(post => { %>
+    <div class="post">
+      <h2><a href="/post/<%= post.id %>"><%= post.title %></a></h2>
+      <div class="meta"><%= post.created_at %></div>
+      <div class="excerpt"><%= post.content.slice(0, 200) %><%= post.content.length > 200 ? '...' : '' %></div>
+      <a href="/post/<%= post.id %>" class="read-more">了解更多 →</a>
+    </div>
+  <% }) %>
+</body>
+</html>

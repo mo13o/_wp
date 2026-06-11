@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title><%= post.title %> - 簡易網誌</title>
+  <style>
+    body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+    h1 { color: #333; }
+    .meta { color: #888; font-size: 0.9em; margin-bottom: 20px; }
+    .content { line-height: 1.8; white-space: pre-wrap; }
+    .actions { margin-top: 30px; }
+    .btn { display: inline-block; padding: 8px 16px; background: #2c6b9e; color: #fff; text-decoration: none; border-radius: 4px; border: none; cursor: pointer; }
+    .btn:hover { background: #1a4a6e; }
+    .btn-danger { background: #c0392b; }
+    .btn-danger:hover { background: #962d22; }
+    .back { margin-left: 10px; color: #888; }
+  </style>
+</head>
+<body>
+  <h1><%= post.title %></h1>
+  <div class="meta">建立時間：<%= post.created_at %> | 更新時間：<%= post.updated_at %></div>
+  <div class="content"><%= post.content %></div>
+  <div class="actions">
+    <a href="/post/<%= post.id %>/edit" class="btn">編輯</a>
+    <form action="/post/<%= post.id %>/delete" method="POST" style="display:inline">
+      <button type="submit" class="btn btn-danger" onclick="return confirm('確定刪除？')">刪除</button>
+    </form>
+    <a href="/" class="back">回列表</a>
+  </div>
+</body>
+</html>

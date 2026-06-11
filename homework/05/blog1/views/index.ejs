@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title><%= active === 'my' ? '我的貼文' : '公共貼文' %> - Dcard Blog</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; color: #333; }
+    .navbar { background: #fff; border-bottom: 1px solid #e0e0e0; position: sticky; top: 0; z-index: 100; }
+    .nav-inner { max-width: 960px; margin: 0 auto; display: flex; align-items: center; padding: 0 16px; height: 56px; }
+    .logo { font-size: 20px; font-weight: 700; color: #6b46c1; text-decoration: none; margin-right: 32px; }
+    .nav-tabs { display: flex; gap: 4px; flex: 1; }
+    .nav-tab { padding: 8px 16px; text-decoration: none; color: #666; font-size: 14px; border-radius: 20px; transition: all .2s; }
+    .nav-tab:hover { background: #f0f0f0; color: #333; }
+    .nav-tab.active { background: #6b46c1; color: #fff; }
+    .nav-user { display: flex; align-items: center; gap: 12px; font-size: 14px; }
+    .nav-user .username { color: #666; }
+    .nav-user a { color: #6b46c1; text-decoration: none; }
+    .nav-user a:hover { text-decoration: underline; }
+    .nav-user form { display: inline; }
+    .nav-user button { background: none; border: none; color: #6b46c1; cursor: pointer; font-size: 14px; text-decoration: underline; }
+    .container { max-width: 640px; margin: 0 auto; padding: 16px; }
+    .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .header-bar h2 { font-size: 18px; color: #333; }
+    .btn-primary { background: #6b46c1; color: #fff; border: none; padding: 8px 20px; border-radius: 20px; font-size: 14px; cursor: pointer; text-decoration: none; transition: background .2s; }
+    .btn-primary:hover { background: #553c9a; }
+    .post-card { background: #fff; border-radius: 8px; padding: 20px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.08); transition: box-shadow .2s; }
+    .post-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,.12); }
+    .post-card h3 { font-size: 16px; margin-bottom: 6px; }
+    .post-card h3 a { color: #333; text-decoration: none; }
+    .post-card h3 a:hover { color: #6b46c1; }
+    .post-card .meta { font-size: 12px; color: #999; margin-bottom: 10px; }
+    .post-card .excerpt { font-size: 14px; color: #666; line-height: 1.6; }
+    .post-card .excerpt a { color: #6b46c1; text-decoration: none; font-weight: 500; }
+    .post-card .excerpt a:hover { text-decoration: underline; }
+    .read-more { display: inline-block; margin-top: 10px; color: #6b46c1; text-decoration: none; font-size: 13px; font-weight: 600; }
+    .read-more:hover { text-decoration: underline; }
+    .empty { text-align: center; padding: 60px 20px; color: #999; font-size: 14px; }
+    .empty .emoji { font-size: 48px; margin-bottom: 12px; }
+    @media (max-width: 640px) { .nav-inner { padding: 0 12px; } .container { padding: 12px; } }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="/" class="logo">DC Blog</a>
+      <div class="nav-tabs">
+        <a href="/" class="nav-tab <%= active === 'public' ? 'active' : '' %>">公共貼文</a>
+        <% if (user) { %><a href="/my" class="nav-tab <%= active === 'my' ? 'active' : '' %>">我的貼文</a><% } %>
+      </div>
+      <div class="nav-user">
+        <% if (user) { %>
+          <span class="username"><%= user.username %></span>
+          <form action="/logout" method="POST"><button type="submit">登出</button></form>
+        <% } else { %>
+          <a href="/login">登入</a>
+          <a href="/register">註冊</a>
+        <% } %>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="header-bar">
+      <h2><%= active === 'my' ? '我的貼文' : '公共貼文' %></h2>
+      <% if (user) { %><a href="/post/new" class="btn-primary">寫文章</a><% } %>
+    </div>
+
+    <% if (posts.length === 0) { %>
+      <div class="empty">
+        <div class="emoji"><%= active === 'my' ? '✏️' : '📝' %></div>
+        <p><%= active === 'my' ? '你還沒有發表任何文章' : '目前還沒有文章' %></p>
+      </div>
+    <% } %>
+
+    <% posts.forEach(post => { %>
+      <div class="post-card">
+        <h3><a href="/post/<%= post.id %>"><%= post.title %></a></h3>
+        <div class="meta"><%= post.author %> · <%= post.created_at %></div>
+        <div class="excerpt">
+          <%= post.content.slice(0, 150) %><%= post.content.length > 150 ? '...' : '' %>
+        </div>
+        <a href="/post/<%= post.id %>" class="read-more">查看更多內容 →</a>
+      </div>
+    <% }) %>
+  </div>
+</body>
+</html>

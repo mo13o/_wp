@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>編輯文章 - DC Blog</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; color: #333; }
+    .navbar { background: #fff; border-bottom: 1px solid #e0e0e0; position: sticky; top: 0; z-index: 100; }
+    .nav-inner { max-width: 960px; margin: 0 auto; display: flex; align-items: center; padding: 0 16px; height: 56px; }
+    .logo { font-size: 20px; font-weight: 700; color: #6b46c1; text-decoration: none; margin-right: 24px; }
+    .nav-tabs { display: flex; gap: 4px; flex: 1; }
+    .nav-tab { padding: 8px 16px; text-decoration: none; color: #666; font-size: 14px; border-radius: 20px; }
+    .nav-tab:hover { background: #f0f0f0; }
+    .nav-user { display: flex; align-items: center; gap: 12px; font-size: 14px; }
+    .nav-user .username { color: #666; }
+    .nav-user a { color: #6b46c1; text-decoration: none; }
+    .nav-user button { background: none; border: none; color: #6b46c1; cursor: pointer; font-size: 14px; text-decoration: underline; }
+    .container { max-width: 640px; margin: 0 auto; padding: 16px; }
+    .form-card { background: #fff; border-radius: 8px; padding: 28px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+    .form-card h1 { font-size: 20px; margin-bottom: 20px; }
+    label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; color: #555; }
+    select, input, textarea { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; font-family: inherit; margin-bottom: 16px; transition: border .2s; }
+    select:focus, input:focus, textarea:focus { outline: none; border-color: #6b46c1; box-shadow: 0 0 0 3px rgba(107,70,193,.1); }
+    textarea { height: 280px; resize: vertical; }
+    .form-actions { display: flex; gap: 8px; align-items: center; }
+    .btn-primary { background: #6b46c1; color: #fff; border: none; padding: 10px 24px; border-radius: 20px; font-size: 14px; cursor: pointer; transition: background .2s; }
+    .btn-primary:hover { background: #553c9a; }
+    .btn-cancel { color: #999; text-decoration: none; font-size: 14px; }
+    .btn-cancel:hover { color: #666; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="/" class="logo">DC Blog</a>
+      <div class="nav-tabs">
+        <a href="/" class="nav-tab">全部</a>
+        <a href="/my" class="nav-tab">我的貼文</a>
+      </div>
+      <div class="nav-user">
+        <span class="username"><%= user.username %></span>
+        <form action="/logout" method="POST"><button type="submit">登出</button></form>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="form-card">
+      <h1>編輯文章</h1>
+      <form action="/post/<%= post.id %>/update" method="POST">
+        <label>板塊</label>
+        <select name="board_id">
+          <% boards.forEach(board => { %>
+            <option value="<%= board.id %>" <%= post.board_id === board.id ? 'selected' : '' %>><%= board.label %></option>
+          <% }) %>
+        </select>
+        <label>標題</label>
+        <input type="text" name="title" value="<%= post.title %>" required>
+        <label>內容</label>
+        <textarea name="content" required><%= post.content %></textarea>
+        <div class="form-actions">
+          <button type="submit" class="btn-primary">儲存</button>
+          <a href="/post/<%= post.id %>" class="btn-cancel">取消</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+</html>
