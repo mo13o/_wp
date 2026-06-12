@@ -1,0 +1,7 @@
+(function() {
+  let count = 100;
+  console.log(`Count is: ${count}`);
+})();
+
+// 測試：在外部嘗試存取會報錯
+// console.log(count); // ReferenceError: count is not defined
