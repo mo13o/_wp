@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>黃俞蓁 - 網頁設計作業總覽</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #4A90E2;
+            --primary-dark: #357ABD;
+            --bg: #f5f7fa;
+            --card: #fff;
+            --text: #333;
+            --text-light: #666;
+            --border: #e0e0e0;
+            --accent: #6b46c1;
+        }
+        body { font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+        
+        .navbar { background: var(--card); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+        .nav-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; padding: 0 20px; height: 60px; gap: 8px; overflow-x: auto; }
+        .logo { font-size: 18px; font-weight: 700; color: var(--primary); text-decoration: none; white-space: nowrap; margin-right: 12px; }
+        .nav-inner a.nav-link { padding: 6px 14px; text-decoration: none; color: var(--text-light); font-size: 14px; border-radius: 20px; transition: all .2s; white-space: nowrap; }
+        .nav-inner a.nav-link:hover { background: #e8f0fe; color: var(--primary); }
+        .nav-inner a.nav-link.active { background: var(--primary); color: #fff; }
+
+        .hero { background: linear-gradient(135deg, var(--primary), var(--accent)); color: #fff; padding: 60px 20px 50px; text-align: center; }
+        .hero h1 { font-size: 32px; margin-bottom: 8px; letter-spacing: 1px; }
+        .hero p { font-size: 16px; opacity: .9; }
+        .hero .badge { display: inline-block; background: rgba(255,255,255,0.2); padding: 4px 16px; border-radius: 20px; font-size: 13px; margin-top: 12px; }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 30px 20px 60px; }
+
+        .week-section { margin-bottom: 48px; scroll-margin-top: 70px; }
+        .week-header { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+        .week-num { background: var(--primary); color: #fff; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; flex-shrink: 0; }
+        .week-title { font-size: 22px; font-weight: 700; color: var(--text); }
+        .week-subtitle { font-size: 14px; color: var(--text-light); }
+
+        .project-grid { display: flex; flex-direction: column; gap: 14px; align-items: center; }
+        .project-card { background: var(--card); border-radius: 10px; padding: 14px 18px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); transition: transform .2s, box-shadow .2s; border: 1px solid var(--border); width: min(92%, 960px); margin: 0 auto; height: auto; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; }
+        .project-card:hover { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(0,0,0,0.1); }
+        .project-card .icon { font-size: 26px; width: 36px; text-align: center; flex-shrink: 0; }
+        .project-card .card-body { flex: 1; min-width: 200px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
+        .project-card h4 { font-size: 15px; margin: 0; flex: 0 0 auto; }
+        .project-card p { font-size: 12px; color: var(--text-light); margin: 0; flex: 1 1 180px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .project-card .tags { display: flex; flex-wrap: wrap; gap: 4px; flex: 1 1 100%; margin: 0; }
+        .project-card .tag { background: #e8f0fe; color: var(--primary); padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 600; }
+        .project-card .actions { display: flex; gap: 6px; flex-shrink: 0; margin-left: auto; }
+        .project-card .actions a { padding: 5px 12px; border-radius: 6px; font-size: 11px; text-decoration: none; font-weight: 600; transition: all .2s; white-space: nowrap; }
+        .btn-view { background: var(--primary); color: #fff; }
+        .btn-view:hover { background: var(--primary-dark); }
+        .btn-source { background: #f0f0f0; color: var(--text); }
+        .btn-source:hover { background: #e0e0e0; }
+        .btn-dir { background: #f3eefb; color: var(--accent); }
+        .btn-dir:hover { background: #e8dff5; }
+
+        .project-card .extra { max-height: 0; overflow-y: auto; transition: max-height 0.35s ease; flex: 1 1 100%; }
+        .project-card:hover .extra, .project-card:focus-within .extra { max-height: 160px; }
+        .code-block { background: #1e1e2e; color: #cdd6f4; border-radius: 8px; padding: 14px 16px; font-size: 12px; font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace; overflow-x: auto; margin-top: 10px; line-height: 1.7; white-space: pre; }
+        .code-block .kw { color: #cba6f7; }
+        .code-block .fn { color: #89b4fa; }
+        .code-block .str { color: #a6e3a1; }
+        .code-block .num { color: #fab387; }
+        .code-block .cm { color: #6c7086; }
+        .code-block .op { color: #89dceb; }
+
+        .concept-box { background: #f0f7ff; border-left: 4px solid var(--primary); border-radius: 0 8px 8px 0; padding: 14px 18px; margin-top: 16px; }
+        .concept-box h5 { font-size: 13px; color: var(--primary); margin-bottom: 6px; }
+        .concept-box ul { list-style: none; display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 13px; color: var(--text-light); }
+        .concept-box ul li::before { content: "▸ "; color: var(--primary); }
+
+        .files-list { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+        .files-list a { background: #f5f5f5; padding: 3px 10px; border-radius: 6px; font-size: 11px; color: var(--text-light); text-decoration: none; border: 1px solid var(--border); transition: all .2s; }
+        .files-list a:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+        .midterm-card { background: linear-gradient(135deg, #fff5f5, #fff); border: 2px solid #fc8181; }
+        .midterm-card .week-num { background: #e53e3e; }
+
+        .footer { text-align: center; padding: 30px 20px; color: var(--text-light); font-size: 13px; border-top: 1px solid var(--border); }
+
+        @media (max-width: 640px) {
+            .hero h1 { font-size: 24px; }
+            .week-header { flex-wrap: wrap; }
+            .nav-inner { gap: 4px; }
+            .nav-inner a.nav-link { padding: 4px 10px; font-size: 12px; }
+            .project-card { flex-direction: column; align-items: flex-start; }
+            .project-card .actions { margin-left: 0; align-self: stretch; }
+            .project-card .actions a { flex: 1; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="nav-inner">
+        <a href="#" class="logo">HW</a>
+        <a href="#w01" class="nav-link">01</a>
+        <a href="#w02" class="nav-link">02</a>
+        <a href="#w03" class="nav-link">03</a>
+        <a href="#w04" class="nav-link">04</a>
+        <a href="#w05" class="nav-link">05</a>
+        <a href="#w06" class="nav-link">06</a>
+        <a href="#w07" class="nav-link">07</a>
+        <a href="#midterm" class="nav-link" style="color:#e53e3e;">期中</a>
+        <a href="#final" class="nav-link" style="color:#6b46c1;">期末</a>
+    </div>
+</nav>
+
+<div class="hero">
+    <h1>黃俞蓁 · 網頁設計作業總覽</h1>
+    <p>國立金門大學 資訊工程學系 | 114 學年下學期</p>
+    <div class="badge">📁 homework/01 ~ 07 · 期中 · 期末</div>
+</div>
+
+<div class="container">
+
+    <!-- ==================== Week 01 ==================== -->
+    <section class="week-section" id="w01">
+        <div class="week-header">
+            <div class="week-num">01</div>
+            <div>
+                <div class="week-title">HTML 基礎：個人簡介頁面</div>
+                <div class="week-subtitle">CSS 變數 · Flexbox 置中 · 卡片設計</div>
+            </div>
+        </div>
+        <div class="project-grid">
+            <div class="project-card">
+                <div class="icon">👤</div>
+                <div class="card-body">
+                <h4>個人簡介 — aboutme.html</h4>
+                <p>使用 HTML + CSS 建立個人簡介頁面，包含姓名、學校、興趣標籤與自我期許。</p>
+                <div class="tags">
+                    <span class="tag">CSS 變數</span>
+                    <span class="tag">Flexbox</span>
+                    <span class="tag">vh 單位</span>
+                    <span class="tag">transition</span>
+                    <span class="tag">border-radius</span>
+                    <span class="tag">box-shadow</span>
+                </div>
+                </div>
+                <div class="actions" style="margin-top:12px;">
+                    <a href="../01/aboutme.html" class="btn-view" target="_blank">開啟頁面</a>
+                    <a href="../01/" class="btn-source">資料夾</a>
+                </div>
+                <div class="extra">
+                <div class="code-block"><span class="kw">:root</span> { --primary-color: #2c3e50; --accent-color: #3498db; }</div>
+                <div class="code-block"><span class="kw">body</span> { <span class="fn">display</span>: flex; <span class="fn">justify-content</span>: center; <span class="fn">align-items</span>: center; <span class="fn">min-height</span>: 100vh; }</div>
+                <div class="code-block">.container:hover { <span class="fn">transform</span>: <span class="fn">translateY</span>(-5px); }</div>
+                <div class="concept-box">
+                    <h5>⚡ 容易出錯</h5>
+                    <ul>
+                        <li>忘記 min-height: 100vh 會無法滿版置中</li>
+                        <li>CSS 變數需用 var() 取值</li>
+                        <li>justify-content 與 align-items 方向易搞混</li>
+                    </ul>
+                </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== Week 02 ==================== -->
+    <section class="week-section" id="w02">
+        <div class="week-header">
+            <div class="week-num">02</div>
+            <div>
+                <div class="week-title">HTML 表單設計</div>
+                <div class="week-subtitle">15+ 種 input 類型 · 表單驗證 · CSS focus</div>
+            </div>
+        </div>
+        <div class="project-grid">
+            <div class="project-card">
+                <div class="icon">📋</div>
+                <div class="card-body">
+                <h4>產品體驗回饋表單 — form.html</h4>
+                <p>完整的產品回饋表單，涵蓋文字、Email、電話、密碼、數字、日期、時間、單選、複選、滑桿、顏色、網址、檔案上傳與多行文字。</p>
+                <div class="tags">
+                    <span class="tag">input 類型</span>
+                    <span class="tag">label for</span>
+                    <span class="tag">radio</span>
+                    <span class="tag">checkbox</span>
+                    <span class="tag">range</span>
+                    <span class="tag">color</span>
+                    <span class="tag">textarea</span>
+                    <span class="tag">:focus</span>
+                    <span class="tag">box-sizing</span>
+                </div>
+                </div>
+                <div class="actions" style="margin-top:12px;">
+                    <a href="../02/form.html" class="btn-view" target="_blank">開啟頁面</a>
+                    <a href="../02/" class="btn-source">資料夾</a>
+                </div>
+                <div class="extra">
+                <div class="code-block">&lt;<span class="kw">input</span> <span class="fn">type</span>=<span class="str">"email"</span> <span class="fn">id</span>=<span class="str">"email"</span> <span class="fn">required</span>&gt;</div>
+                <div class="code-block">&lt;<span class="kw">input</span> <span class="fn">type</span>=<span class="str">"radio"</span> <span class="fn">name</span>=<span class="str">"satisfaction"</span> <span class="fn">value</span>=<span class="str">"good"</span>&gt;</div>
+                <div class="code-block"><span class="fn">input:focus</span> { <span class="fn">border-color</span>: var(--border-focus); }</div>
+                <div class="concept-box">
+                    <h5>⚡ 容易出錯</h5>
+                    <ul>
+                        <li>label 的 for 須對應 input 的 id（非 name）</li>
+                        <li>同組 radio 需相同 name 才能互斥</li>
+                        <li>忘記 box-sizing: border-box 寬度易跑版</li>
+                    </ul>
+                </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== Week 03 ==================== -->
+    <section class="week-section" id="w03">
+        <div class="week-header">
+            <div class="week-num">03</div>
+            <div>
+                <div class="week-title">JavaScript 入門</div>
+                <div class="week-subtitle">Node.js 環境 · 基本輸出</div>
+            </div>
+        </div>
+        <div class="project-grid">
+            <div class="project-card">
+                <div class="icon">🚀</div>
+                <div class="card-body">
+                <h4>Hello World — hello.js</h4>
+                <p>Node.js 環境的第一支程式，學習 console.log 基本輸出。</p>
+                <div class="tags">
+                    <span class="tag">console.log</span>
+                    <span class="tag">Node.js</span>
+                </div>
+                </div>
+                <div class="actions" style="margin-top:12px;">
+                    <a href="../03/hello.js" class="btn-view" target="_blank">檢視檔案</a>
+                    <a href="../03/" class="btn-source">資料夾</a>
+                </div>
+                <div class="extra">
+                <div class="code-block"><span class="fn">console</span>.<span class="fn">log</span>(<span class="str">'hello 你好'</span>);</div>
+                <div class="concept-box">
+                    <h5>⚡ 容易出錯</h5>
+                    <ul>
+                        <li>Node.js 中無 document / window 物件</li>
+                        <li>字串可用單引號、雙引號或反引號</li>
+                    </ul>
+                </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== Week 04 ==================== -->
+    <section class="week-section" id="w04">
+        <div class="week-header">
+            <div class="week-num">04</div>
+            <div>
+                <div class="week-title">JavaScript 基礎語法</div>
+                <div class="week-subtitle">條件判斷 · 迴圈 · 陣列 · 物件 · JSON</div>
+            </div>
+        </div>
+        <div class="project-grid">
+            <div class="project-card">
+                <div class="icon">📦</div>
+                <div class="card-body">
+                <h4>10 個 JS 基礎練習</h4>
+                <p>從條件判斷到 JSON 日誌處理，涵蓋 if/else、for、while、陣列、物件、JSON.parse/stringify。</p>
+                <div class="tags">
+                    <span class="tag">if/else</span>
+                    <span class="tag">for</span>
+                    <span class="tag">while</span>
+                    <span class="tag">array</span>
+                    <span class="tag">object</span>
+                    <span class="tag">JSON</span>
+                    <span class="tag">Math.random</span>
+                </div>
+                </div>
+                <div class="actions" style="margin-top:12px;">
+                    <a href="../04/" class="btn-dir">📁 資料夾</a>
+                    <a href="../04/README.md" class="btn-source" target="_blank">📖 說明文件</a>
+                </div>
+                <div class="extra">
+                <div class="files-list">
+                    <a href="../04/01.js" target="_blank">01-if</a>
+                    <a href="../04/02.js" target="_blank">02-for</a>
+                    <a href="../04/03.js" target="_blank">03-while</a>
+                    <a href="../04/04.js" target="_blank">04-object</a>
+                    <a href="../04/05.js" target="_blank">05-filter</a>
+                    <a href="../04/06.js" target="_blank">06-JSON</a>
+                    <a href="../04/07.js" target="_blank">07-while</a>
+                    <a href="../04/08.js" target="_blank">08-for-in</a>
+                    <a href="../04/09.js" target="_blank">09-merge</a>
+                    <a href="../04/10.js" target="_blank">10-final</a>
+                    <a href="../04/README.md" target="_blank">README</a>
+                </div>
+                <div class="code-block"><span class="kw">function</span> <span class="fn">checkScore</span>(score) { <span class="kw">if</span> (score &gt;= 60) { <span class="kw">return</span> <span class="str">"及格"</span>; } }</div>
+                <div class="code-block"><span class="kw">function</span> <span class="fn">rollUntilSix</span>() { <span class="kw">let</span> dice = 0; <span class="kw">while</span> (dice !== 6) { dice = <span class="fn">Math.floor</span>(<span class="fn">Math.random</span>() * 6) + 1; } }</div>
+                <div class="code-block"><span class="kw">let</span> userObj = <span class="fn">JSON.parse</span>(jsonString); userObj.isActive = <span class="kw">true</span>; <span class="kw">return</span> <span class="fn">JSON.stringify</span>(userObj);</div>
+                <div class="concept-box">
+                    <h5>⚡ 容易出錯</h5>
+                    <ul>
+                        <li>for 迴圈條件 i &lt; length 易寫成 &lt;=</li>
+                        <li>while 忘記更新變數會無窮迴圈</li>
+                        <li>JSON 鍵名須用雙引號</li>
+                        <li>Math.random() * 6 + 1 才是 1~6</li>
+                    </ul>
+                </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== Week 05 ==================== -->
+    <section class="week-section" id="w05">
+        <div class="week-header">
+            <div class="week-num">05</div>
+            <div>
+                <div class="week-title">Node.js + Express 網誌系統</div>
+                <div class="week-subtitle">SQLite · EJS · Session · bcrypt · CRUD · 板塊分類</div>
+            </div>
+        </div>
+        <div class="project-grid">
+            <div class="project-card">
+                <div class="icon">📝</div>
+                <div class="card-body">
+                <h4>DC Blog — 五版演進 (blog ~ blog4)</h4>
+                <p>從基礎 CRUD 逐步加入會員系統、Dcard 風格 UI、作者個人頁面、板塊分類。</p>
+                <div class="tags">
+                    <span class="tag">Express</span>
+                    <span class="tag">SQLite</span>
+                    <span class="tag">EJS</span>
+                    <span class="tag">Session</span>
+                    <span class="tag">bcrypt</span>
+                    <span class="tag">RESTful</span>
+                    <span class="tag">Middleware</span>
+                </div>
+                </div>
+                <div class="actions" style="margin-top:8px;">
+                    <a href="../05/" class="btn-dir">📁 專案資料夾</a>
+                    <a href="../05/部落格介紹.md" class="btn-source" target="_blank">📖 介紹</a>
+                    <a href="../05/代碼細節.md" class="btn-source" target="_blank">📖 細節</a>
+                </div>
+                <div class="extra">
+                <div class="code-block"><span class="kw">const</span> express = <span class="fn">require</span>(<span class="str">'express'</span>); <span class="kw">const</span> app = <span class="fn">express</span>();</div>
+                <div class="code-block">app.<span class="fn">get</span>(<span class="str">'/'</span>, (req, res) => { res.<span class="fn">render</span>(<span class="str">'index'</span>, { posts }); });</div>
+                <div class="code-block"><span class="kw">function</span> <span class="fn">requireAuth</span>(req, res, next) { <span class="kw">if</span> (!req.session.userId) <span class="kw">return</span> res.<span class="fn">redirect</span>(<span class="str">'/login'</span>); next(); }</div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px;">
+                    <a href="../05/blog/app.js" class="btn-source" target="_blank">blog (基礎)</a>
+                    <a href="../05/blog1/app.js" class="btn-source" target="_blank">blog1 (會員)</a>
+                    <a href="../05/blog2/app.js" class="btn-source" target="_blank">blog2 (卡片)</a>
+                    <a href="../05/blog3/app.js" class="btn-source" target="_blank">blog3 (板塊)</a>
+                    <a href="../05/blog4/app.js" class="btn-source" target="_blank">blog4 (完整)</a>
+                </div>
+
+                <div class="concept-box">
+                    <h5>版本功能對照</h5>
+                    <ul>
+                        <li>blog — 基礎 CRUD</li>
+                        <li>blog1 — 會員註冊/登入/登出</li>
+                        <li>blog2 — Dcard 卡片風格 + 作者頁面</li>
+                        <li>blog3 — 板塊分類 (心情/男女/職業/學生)</li>
+                        <li>blog4 — 完整穩定版</li>
+                    </ul>
+                </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== Week 06 ==================== -->
+    <section class="week-section" id="w06">
+        <div class="week-header">
+            <div class="week-num">06</div>
+            <div>
+                <div class="week-title">JavaScript 進階函數與陣列操作</div>
+                <div class="week-subtitle">Callback · IIFE · Arrow · Closure · map/filter/reduce</div>
+            </div>
+        </div>
+        <div class="project-grid">
+            <div class="project-card">
+                <div class="icon">⚡</div>
+                <div class="card-body">
+                <h4>10 個進階 JS 練習</h4>
+                <p>回呼函數、IIFE、箭頭函數、高階函數、閉包、傳址觀念、setTimeout、reduce 綜合應用。</p>
+                <div class="tags">
+                    <span class="tag">Callback</span>
+                    <span class="tag">IIFE</span>
+                    <span class="tag">Arrow Function</span>
+                    <span class="tag">Closure</span>
+                    <span class="tag">map/filter/reduce</span>
+                    <span class="tag">Pass by Reference</span>
+                    <span class="tag">setTimeout</span>
+                </div>
+                </div>
+                <div class="actions" style="margin-top:12px;">
+                    <a href="../06/" class="btn-dir">📁 資料夾</a>
+                    <a href="../06/README.md" class="btn-source" target="_blank">📖 說明文件</a>
+                </div>
+                <div class="extra">
+                <div class="files-list">
+                    <a href="../06/01.js" target="_blank">01-callback</a>
+                    <a href="../06/02%2Cjs" target="_blank">02-IIFE</a>
+                    <a href="../06/03.js" target="_blank">03-map</a>
+                    <a href="../06/04.js" target="_blank">04-mutate</a>
+                    <a href="../06/05.js" target="_blank">05-closure</a>
+                    <a href="../06/06.js" target="_blank">06-myFilter</a>
+                    <a href="../06/07.js" target="_blank">07-filter</a>
+                    <a href="../06/08.js" target="_blank">08-ref</a>
+                    <a href="../06/09.js" target="_blank">09-setTimeout</a>
+                    <a href="../06/10.js" target="_blank">10-reduce</a>
+                    <a href="../06/README.md" target="_blank">README</a>
+                </div>
+                <div class="code-block"><span class="kw">function</span> <span class="fn">multiplier</span>(factor) { <span class="kw">return</span> (n) => n * factor; }</div>
+                <div class="code-block"><span class="kw">const</span> discounted = prices.<span class="fn">map</span>(price => price * 0.8);</div>
+                <div class="code-block">(<span class="kw">function</span>() { <span class="kw">let</span> count = 100; <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">`Count is: ${count}`</span>); })();</div>
+                <div class="code-block"><span class="kw">const</span> total = cart.<span class="fn">reduce</span>((acc, cur) => acc + cur, 0);</div>
+                <div class="concept-box">
+                    <h5>⚡ 容易出錯</h5>
+                    <ul>
+                        <li>箭頭函數單行可省略 return，多行須寫 return</li>
+                        <li>forEach 不回傳新陣列（map 才會）</li>
+                        <li>重新賦值 b=[100] 不會改原陣列</li>
+                        <li>setTimeout 傳入的是函數本身，非呼叫結果</li>
+                    </ul>
+                </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== Week 07 ==================== -->
+    <section class="week-section" id="w07">
+        <div class="week-header">
+            <div class="week-num">07</div>
+            <div>
+                <div class="week-title">JavaScript 物件操作與後端模式</div>
+                <div class="week-subtitle">解構賦值 · Error-First Callback · 樣板字串 · 模擬 DB</div>
+            </div>
+        </div>
+        <div class="project-grid">
+            <div class="project-card">
+                <div class="icon">🔧</div>
+                <div class="card-body">
+                <h4>10 個物件/後端模式練習</h4>
+                <p>物件存取、解構賦值、forEach 渲染、Error-First Callback、JSON 解析、模擬資料庫查詢、三元運算子、substring。</p>
+                <div class="tags">
+                    <span class="tag">Dot/Bracket</span>
+                    <span class="tag">Destructuring</span>
+                    <span class="tag">Template Literals</span>
+                    <span class="tag">Error-First</span>
+                    <span class="tag">三元運算子</span>
+                    <span class="tag">substring</span>
+                </div>
+                </div>
+                <div class="actions" style="margin-top:12px;">
+                    <a href="../07/" class="btn-dir">📁 資料夾</a>
+                    <a href="../07/README.md" class="btn-source" target="_blank">📖 說明文件</a>
+                </div>
+                <div class="extra">
+                <div class="files-list">
+                    <a href="../07/01.js" target="_blank">01-access</a>
+                    <a href="../07/02.js" target="_blank">02-destructure</a>
+                    <a href="../07/03.js" target="_blank">03-forEach</a>
+                    <a href="../07/04.js" target="_blank">04-params</a>
+                    <a href="../07/05.js" target="_blank">05-callback</a>
+                    <a href="../07/06.js" target="_blank">06-JSON</a>
+                    <a href="../07/07.js" target="_blank">07-fakeDB</a>
+                    <a href="../07/08.js" target="_blank">08-template</a>
+                    <a href="../07/09.js" target="_blank">09-substring</a>
+                    <a href="../07/10.js" target="_blank">10-error-first</a>
+                    <a href="../07/README.md" target="_blank">README</a>
+                </div>
+                <div class="code-block"><span class="kw">const</span> { title, content } = req.body;</div>
+                <div class="code-block"><span class="kw">function</span> <span class="fn">fetchData</span>(id, callback) { callback(<span class="kw">null</span>, fakeData); }</div>
+                <div class="code-block"><span class="kw">const</span> html = <span class="str">`&lt;h1&gt;Welcome, ${user ? user : "Stranger"}&lt;/h1&gt;`</span>;</div>
+                <div class="code-block">arr.<span class="fn">map</span>(text => text.<span class="fn">substring</span>(0, 10) + <span class="str">"..."</span>);</div>
+                <div class="concept-box">
+                    <h5>⚡ 容易出錯</h5>
+                    <ul>
+                        <li>點符號後為字面屬性名，無法用變數</li>
+                        <li>解構變數名須與屬性名相同</li>
+                        <li>substring(0,10) 取索引 0~9</li>
+                        <li>樣板字串使用反引號 ` 非單引號</li>
+                    </ul>
+                </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== 期中 ==================== -->
+    <section class="week-section" id="midterm">
+        <div class="week-header">
+            <div class="week-num" style="background:#e53e3e;">中</div>
+            <div>
+                <div class="week-title">期中專案：質感一頁式商店</div>
+                <div class="week-subtitle">localStorage · DOM 操作 · 會員系統 · 評價功能</div>
+            </div>
+        </div>
+        <div class="project-grid">
+            <div class="project-card midterm-card">
+                <div class="icon">🏪</div>
+                <div class="card-body">
+                <h4>ShopStore — 一頁式商店註冊系統</h4>
+                <p>前端全功能商店頁面，含商品列表、搜尋篩選、會員註冊/登入/登出、商品模擬購買、星等評價系統、每日獎勵。</p>
+                <div class="tags">
+                    <span class="tag">localStorage</span>
+                    <span class="tag">JSON</span>
+                    <span class="tag">DOM</span>
+                    <span class="tag">Modal</span>
+                    <span class="tag">filter</span>
+                    <span class="tag">map</span>
+                    <span class="tag">classList</span>
+                    <span class="tag">事件監聽</span>
+                </div>
+                </div>
+                <div class="actions" style="margin-top:12px;">
+                    <a href="../期中/store.html" class="btn-view" target="_blank">開啟頁面</a>
+                    <a href="../期中/store.html" class="btn-source" target="_blank">檢原始碼</a>
+                    <a href="../期中/readme.md" class="btn-source" target="_blank">📖 技術筆記</a>
+                    <a href="../期中/" class="btn-dir">📁 資料夾</a>
+                </div>
+                <div class="extra">
+                <div class="code-block"><span class="kw">const</span> users = <span class="fn">JSON.parse</span>(localStorage.<span class="fn">getItem</span>(<span class="str">'shop_users'</span>)) || {};</div>
+                <div class="code-block">products.<span class="fn">filter</span>(p => p.name.<span class="fn">toLowerCase</span>().<span class="fn">includes</span>(kw));</div>
+                <div class="code-block">element.<span class="fn">classList</span>.<span class="fn">add</span>(<span class="str">'active'</span>);</div>
+                <div class="concept-box" style="border-left-color:#e53e3e;">
+                    <h5 style="color:#e53e3e;">💡 核心技術</h5>
+                    <ul>
+                        <li>localStorage 模擬資料庫（會員/評價/購買）</li>
+                        <li>JSON.stringify / parse 資料持久化</li>
+                        <li>Modal 彈窗控制（display: flex/none）</li>
+                        <li>星星評分 classList 切換 active</li>
+                        <li>每日領獎日期比對（toLocaleDateString）</li>
+                    </ul>
+                </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== 期末 ==================== -->
+    <section class="week-section" id="final">
+        <div class="week-header">
+            <div class="week-num" style="background:#6b46c1;">末</div>
+            <div>
+                <div class="week-title">期末統整筆記</div>
+                <div class="week-subtitle">01-07 全部程式概念重點整理</div>
+            </div>
+        </div>
+        <div class="project-grid">
+            <div class="project-card" style="border:2px solid #6b46c1;">
+                <div class="icon">📚</div>
+                <div class="card-body">
+                <h4>01-07 程式概念統整</h4>
+                <p>涵蓋每週主題、重要語法表格、程式碼範例與容易出錯的地方，以及跨週核心概念對照表。</p>
+                <div class="tags">
+                    <span class="tag">HTML</span>
+                    <span class="tag">CSS</span>
+                    <span class="tag">JavaScript</span>
+                    <span class="tag">Node.js</span>
+                    <span class="tag">Express</span>
+                    <span class="tag">SQLite</span>
+                </div>
+                </div>
+                <div class="actions" style="margin-top:12px;">
+                    <a href="01-07程式概念統整.md" class="btn-view" target="_blank">📖 閱讀筆記</a>
+                    <a href="../期末/" class="btn-dir">📁 資料夾</a>
+                </div>
+            </div>
+            <div class="project-card">
+                <div class="icon">🌐</div>
+                <div class="card-body">
+                <h4>本頁面 — index.html</h4>
+                <p>一頁式作業總覽網站，整合所有 homework 專案的連結、程式碼範例與重點提示。</p>
+                <div class="tags">
+                    <span class="tag">HTML</span>
+                    <span class="tag">CSS</span>
+                    <span class="tag">RWD</span>
+                </div>
+                </div>
+                <div class="actions" style="margin-top:12px;">
+                    <a href="index.html" class="btn-view" target="_blank">重新整理</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<div class="footer">
+    黃俞蓁 · 國立金門大學 資訊工程學系 · 114 學年下學期 網頁設計
+</div>
+
+<script>
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', function() {
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+</script>
+</body>
+</html>
