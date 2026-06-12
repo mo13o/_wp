@@ -1,5 +1,7 @@
 # JavaScript 進階函數與陣列操作：實作挑戰題解與摘要
 
+使用gemini輔助解題:https://gemini.google.com/share/042d431a8549
+
 本專案收錄了 10 題 JavaScript 進階函數、回呼函數 (Callback)、陣列操作、閉包 (Closure) 以及傳址特性 (Pass by Reference) 的實作挑戰題解。每題皆包含**核心概念摘要（答案）**與**完整實作程式碼**，適合用於複習 JavaScript 的核心觀念。
 
 ---
