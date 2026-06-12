@@ -1,5 +1,7 @@
 # 全方位 JavaScript 實作挑戰：從基礎到後端邏輯（答案與程式碼摘要）
 
+使用gemini輔助解題:https://gemini.google.com/share/fc333e6ea372
+
 本文件收錄了十道針對 JavaScript 與 Node.js 後端開發核心觀念的實作挑戰題目、答案解析及程式碼摘要，專為理解 Express 框架與非同步操作設計。
 
 ---
