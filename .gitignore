@@ -123,6 +123,11 @@ dist
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
 
+# SQLite database files
+*.db
+*.db-shm
+*.db-wal
+
 # yarn v2
 .yarn/cache
 .yarn/unplugged
